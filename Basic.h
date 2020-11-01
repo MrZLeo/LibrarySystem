@@ -7,21 +7,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "Book.h"
-#include "Bookshelf.h"
+#include <string.h>
+#include <math.h>
 
 typedef enum bool {
     true = 1,
     false = 0,
 } bool;
 
-typedef struct Tree {
-    int part;
-    Book book;
-    int size;
-
-    bool (*isEmpty)(struct Tree *tree);
-    int (*getSize)(struct Tree *tree);
-} *Tree;
 
 #endif //LIBRARY_SYSTEM_BASIC_H
