@@ -11,10 +11,27 @@ typedef struct book {
     int book_ID;
     char *name;
 
+    struct book *(*new_Book)(char *);
+
+    void (*free_Book)(struct book *);
+
     int (*getID)(struct book book);
 
     char *(*getName)(struct book book);
+
 } Book;
+
+Book *new_Book(int ID, char *name) {
+    Book *book = (Book *) calloc(1, sizeof(Book));
+    book->book_ID = ID;
+    book->name = name;
+    return book;
+}
+
+void free_Book(Book *book) {
+    free(book->name);
+    free_Book(book);
+}
 
 int getID(Book book) {
     return book.book_ID;
