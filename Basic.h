@@ -15,5 +15,8 @@ typedef enum bool {
     false = 0,
 } bool;
 
+const int listLength = 2;
+const char menu[][14] = {"1.账号登录",
+                         "2.借阅图书",};
 
 #endif //LIBRARY_SYSTEM_BASIC_H

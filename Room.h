@@ -13,8 +13,6 @@ typedef struct room {
     Bookshelf *bookshelf;
     int roomNumber;
 
-    struct room *(*new_Room)();
-
     void (*free_Room)(struct room *);
 } Room;
 

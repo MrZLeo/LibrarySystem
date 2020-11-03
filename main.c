@@ -4,9 +4,13 @@
 
 #include "Basic.h"
 #include "Book.h"
+#include "View.h"
+#include "Controller.h"
 
 int main() {
-    Book book = {1, "Bible", getID, getName};
-    printf("%s", book.getName(book));
+    Controller controller;
+    View *view = (View *) malloc(sizeof(struct view));
+    controller.setController(*view, listLength, (char **) menu);
+    controller.updateView(controller);
     return 0;
 }

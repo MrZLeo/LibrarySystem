@@ -16,7 +16,7 @@ typedef struct bookshelf {
 } Bookshelf;
 
 void free_Bookshelf(Bookshelf *bookshelf) {
-    bookshelf->book->free_Book(bookshelf.book);
+    bookshelf->book->free_Book(bookshelf->book);
     free(bookshelf);
 }
 

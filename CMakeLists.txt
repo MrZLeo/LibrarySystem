@@ -3,4 +3,4 @@ project(Library_System)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(Library_System main.c Basic.h Bookshelf.h Book.h Room.h)
+add_executable(Library_System main.c Basic.h Bookshelf.h Book.h Room.h View.h Controller.c View.c Controller.h)

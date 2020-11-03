@@ -11,8 +11,6 @@ typedef struct book {
     int book_ID;
     char *name;
 
-    struct book *(*new_Book)(char *);
-
     void (*free_Book)(struct book *);
 
     int (*getID)(struct book book);
