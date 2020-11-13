@@ -11,6 +11,8 @@ typedef struct book {
     int book_ID;
     char *name;
 
+    struct book *next;
+
     void (*free_Book)(struct book *);
 
     int (*getID)(struct book book);
@@ -23,9 +25,11 @@ Book *new_Book(int ID, char *name) {
     Book *book = (Book *) calloc(1, sizeof(Book));
     book->book_ID = ID;
     book->name = name;
+    book->next = NULL;
     return book;
 }
 
+// TODO: 重新思考free操作的内存问题
 void free_Book(Book *book) {
     free(book->name);
     free_Book(book);

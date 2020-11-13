@@ -24,5 +24,16 @@ typedef struct controller {
     void (*updateView)(struct controller);
 } Controller;
 
+int getListLength(Controller controller) {
+    return controller.listLength;
+}
+
+char **getMenu(Controller controller) {
+    return controller.menu;
+};
+
+void updateView(Controller controller) {
+    controller.view.viewMenu((const char **) controller.menu, controller.listLength);
+};
 
 #endif //LIBRARY_SYSTEM_CONTROLLER_H

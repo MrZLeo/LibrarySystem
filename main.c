@@ -8,9 +8,7 @@
 #include "Controller.h"
 
 int main() {
-    Controller controller;
-    View *view = (View *) malloc(sizeof(struct view));
-    controller.setController(*view, listLength, (char **) menu);
-    controller.updateView(controller);
+
+
     return 0;
 }
