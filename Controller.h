@@ -7,33 +7,30 @@
 
 #include "Basic.h"
 #include "View.h"
+#include "User.h"
+#include "Bookshelf.h"
 
 
 typedef struct controller {
 
-    View view;
-    int listLength;
-    char **menu;
+    View *view;
+    User *user;
+    Bookshelf *bookshelf;
 
-    void (*setController)(View, int, char **);
+    void (*setController)(struct controller *this, View *view, Bookshelf *bookshelf, User *user);
 
-    int (*getListLength)(struct controller);
+    void (*updateView)(struct controller *this);
 
-    char **(*getMenu)(struct controller);
+} *Controller;
 
-    void (*updateView)(struct controller);
-} Controller;
-
-int getListLength(Controller controller) {
-    return controller.listLength;
+void setController(Controller this, View *view, Bookshelf *bookshelf, User *user) {
+    this->view = view;
+    this->bookshelf = bookshelf;
+    this->user = user;
 }
 
-char **getMenu(Controller controller) {
-    return controller.menu;
-};
-
-void updateView(Controller controller) {
-    controller.view.viewMenu((const char **) controller.menu, controller.listLength);
-};
+void updateView(Controller this) {
+    this->view->updateDetail(this->view);
+}
 
 #endif //LIBRARY_SYSTEM_CONTROLLER_H

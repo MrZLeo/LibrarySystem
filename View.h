@@ -14,15 +14,17 @@ const char menu[][14] = {"1.账号登录",
 
 typedef struct view {
 
-    void (*viewMenu)(const char **, int);
+    void (*showMenu)();
+
+    void (*updateDetail)(struct view *this);
 } View;
 
-void viewMenu(const char **menuOf, const int Length) {
+void showMenu() {
     printf("欢迎来到图书馆\n");
     printf("请先完成登录：\n");
     printf("以下为您可选择的操作：\n");
-    for (int i = 0; i < Length; ++i) {
-        printf("%s\n", menuOf[i]);
+    for (int i = 0; i < listLength; ++i) {
+        printf("%s\n", menu[i]);
     }
 }
 

@@ -11,7 +11,8 @@ typedef struct book {
     int book_ID;
     char *name;
 
-    struct book *next;
+    struct book *left;
+    struct book *right;
 
     void (*free_Book)(struct book *);
 
@@ -25,7 +26,8 @@ Book *new_Book(int ID, char *name) {
     Book *book = (Book *) calloc(1, sizeof(Book));
     book->book_ID = ID;
     book->name = name;
-    book->next = NULL;
+    book->left = NULL;
+    book->right = NULL;
     return book;
 }
 
@@ -35,12 +37,12 @@ void free_Book(Book *book) {
     free_Book(book);
 }
 
-int getID(Book book) {
-    return book.book_ID;
+int getID(Book *book) {
+    return book->book_ID;
 }
 
-char *getName(Book book) {
-    return book.name;
+char *getName(Book *book) {
+    return book->name;
 }
 
 #endif //LIBRARY_SYSTEM_BOOK_H
