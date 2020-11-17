@@ -5,7 +5,8 @@
 #ifndef LIBRARY_SYSTEM_BOOK_H
 #define LIBRARY_SYSTEM_BOOK_H
 
-#include "Basic.h"
+#include "../Basic.h"
+#include <assert.h>
 
 typedef struct book {
     int book_ID;
@@ -13,12 +14,6 @@ typedef struct book {
 
     struct book *left;
     struct book *right;
-
-    void (*free_Book)(struct book *);
-
-    int (*getID)(struct book book);
-
-    char *(*getName)(struct book book);
 
 } Book;
 
@@ -28,21 +23,17 @@ Book *new_Book(int ID, char *name) {
     book->name = name;
     book->left = NULL;
     book->right = NULL;
+
     return book;
 }
 
 // TODO: 重新思考free操作的内存问题
-void free_Book(Book *book) {
-    free(book->name);
-    free_Book(book);
-}
-
-int getID(Book *book) {
-    return book->book_ID;
-}
-
-char *getName(Book *book) {
-    return book->name;
+void free_Book(Book *book, int size) {
+    assert(book != NULL);
+    for (int i = 0; i < size; ++i) {
+        free(book->name);
+        free(book);
+    }
 }
 
 #endif //LIBRARY_SYSTEM_BOOK_H

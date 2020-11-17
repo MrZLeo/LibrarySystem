@@ -7,9 +7,14 @@
 
 int main() {
     Bookshelf bookshelf = new_bookshelf();
-    bookshelf->addBook(bookshelf, 1, "Bible");
-    bookshelf->addBook(bookshelf, 2, "Price");
-    bookshelf->addBook(bookshelf, 3, "Awesome");
+    bookshelf->addBook(bookshelf, "Bible");
+    bookshelf->addBook(bookshelf, "Price");
+    bookshelf->addBook(bookshelf, "Awesome");
+    bookshelf->showBook(bookshelf);
+    bookshelf->removeBook(bookshelf, "Awesome");
+    printf("%d\n", bookshelf->findBook(bookshelf, "Awesome"));
+    printf("%d\n", bookshelf->getSize(bookshelf));
+    printf("%d\n", bookshelf->isEmpty(bookshelf));
     bookshelf->showBook(bookshelf);
     return 0;
 }

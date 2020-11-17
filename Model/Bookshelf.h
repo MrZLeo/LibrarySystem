@@ -23,7 +23,7 @@ typedef struct bookshelf {
 
     int (*getSize)(struct bookshelf *);
 
-    void (*addBook)(struct bookshelf *, int, char *);
+    void (*addBook)(struct bookshelf *, char *);
 
     int (*findBook)(struct bookshelf *, char *);
 
@@ -31,23 +31,29 @@ typedef struct bookshelf {
 
     void (*removeBook)(struct bookshelf *, char *bookName);
 
+    void (*setID)(struct bookshelf *);
 
 } *Bookshelf;
 
-void free_Bookshelf(Bookshelf bookshelf) {
-    bookshelf->root_book->free_Book(bookshelf->root_book);
-    free(bookshelf);
+static int ID = 1;
+
+void setID(Bookshelf this) {
+    ID = this->size + 1;
 }
 
-bool isEmpty(Bookshelf bookshelf) {
-    return bookshelf->size == 0;
+void free_Bookshelf(Bookshelf this) {
+    free_Book(this->root_book, this->size);
+    free(this);
 }
 
-int getSize(Bookshelf bookshelf) {
-    return bookshelf->size;
+bool isEmpty(Bookshelf this) {
+    return this->size == 0 ? true : false;
 }
 
-// TODO 实现方案有问题，要改成return Node的方案
+int getSize(Bookshelf this) {
+    return this->size;
+}
+
 Book *addBook__(Bookshelf bookshelf, Book *book, int bookID, char *bookName) {
 
     if (book == NULL) {
@@ -60,18 +66,23 @@ Book *addBook__(Bookshelf bookshelf, Book *book, int bookID, char *bookName) {
         book->left = addBook__(bookshelf, book->left, bookID, bookName);
     else if (strcmp(book->name, bookName) < 0)
         book->right = addBook__(bookshelf, book->right, bookID, bookName);
-    else // ==
+    else {
         printf("本书已存在\n");
+    }
+
+    return book;
 }
 
-void addBook(Bookshelf bookshelf, int bookID, char *bookName) {
+void addBook(Bookshelf bookshelf, char *bookName) {
     assert(bookshelf != NULL);
-    bookshelf->root_book = addBook__(bookshelf, bookshelf->root_book, bookID, bookName);
+    bookshelf->root_book = addBook__(bookshelf, bookshelf->root_book, ID++, bookName);
 }
 
 int findBook__(Book *book, char *bookName) {
-    if (book == NULL)
+    if (book == NULL) {
         printf("找不到该书\n");
+        return -1;
+    }
 
     if (strcmp(book->name, bookName) == 0) {
         return book->book_ID;
@@ -118,7 +129,6 @@ void removeMax(Bookshelf bookshelf, Book *book) {
 
 Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
     if (book == NULL) {
-        printf("找不到这本书\n");
         return NULL;
     }
 
@@ -126,7 +136,7 @@ Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
         book->right = removeBook__(bookshelf, book->right, bookName);
         return book;
     } else if (strcmp(book->name, bookName) > 0) {
-        book->left = removeBook__(bookshelf, book->right, bookName);
+        book->left = removeBook__(bookshelf, book->left, bookName);
         return book;
     } else {
 
@@ -137,7 +147,7 @@ Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
             bookshelf->size--;
             return rightBook;
         }
-        if (book->left == NULL) {
+        if (book->right == NULL) {
             Book *leftBook = book->left;
             free(book);
             bookshelf->size--;
@@ -178,13 +188,15 @@ Bookshelf new_bookshelf() {
 
     // 初始化函数
     bookshelf->getSize = getSize;
-    bookshelf->isEmpty - isEmpty;
+    bookshelf->isEmpty = isEmpty;
     bookshelf->free_Bookshelf = free_Bookshelf;
     bookshelf->addBook = addBook;
     bookshelf->findBook = findBook;
     bookshelf->showBook = showBook;
     bookshelf->removeBook = removeBook;
+    bookshelf->setID = setID;
 
     return bookshelf;
 }
+
 #endif //LIBRARY_SYSTEM_BOOKSHELF_H
