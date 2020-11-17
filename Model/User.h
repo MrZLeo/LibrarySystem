@@ -5,7 +5,7 @@
 #ifndef LIBRARY_SYSTEM_USER_H
 #define LIBRARY_SYSTEM_USER_H
 
-#include <string.h>
+
 #include "../Basic.h"
 #include "Book.h"
 
@@ -66,7 +66,7 @@ void login(User this, const char *authority, const char *password, char *userNam
                 printf("密码错误\n");
             else {
                 printf("输入管理员密码错误超过三次，系统自动退出。\n");
-                exit(1);
+                exit(-1);
             }
         }
     } else if (strcmp(authority, "student") == 0) {
@@ -105,12 +105,12 @@ void initUser(User this) {
     printf("请输入用户等级的英文，e.g. root\n");
     scanf("%s", authority);
     if (strcmp(authority, "viewer") == 0) {
-        login(this, authority, NULL, NULL);
+        this->login(this, authority, NULL, NULL);
     } else if (strcmp(authority, "root") == 0) {
         getUserAndPassword("root", password);
-        login(this, authority, password, NULL);
+        this->login(this, authority, password, NULL);
 
-        if (this->authority == unknown) {
+        while (this->authority == unknown) {
 
             printf("是否重新输入？（Y/N）\n");
             fflush(stdin);
@@ -118,15 +118,15 @@ void initUser(User this) {
             scanf("%c", &ch);
             if (ch == 'Y') {
                 getUserAndPassword("root", password);
-                login(this, authority, password, userName);
+                this->login(this, authority, password, userName);
             }
         }
 
     } else if (strcmp(authority, "student") == 0) {
         getUserAndPassword(userName, password);
-        login(this, authority, password, userName);
+        this->login(this, authority, password, userName);
 
-        if (this->authority == unknown) {
+        while (this->authority == unknown) {
 
             printf("是否重新输入？（Y/N）\n");
             fflush(stdin);
@@ -134,7 +134,7 @@ void initUser(User this) {
             scanf("%c", &ch);
             if (ch == 'Y') {
                 getUserAndPassword(userName, password);
-                login(this, authority, password, userName);
+                this->login(this, authority, password, userName);
             }
         }
 
@@ -142,10 +142,9 @@ void initUser(User this) {
         printf("输入错误，是否重新输入？（Y/N）\n");\
         char ch;
         scanf("%c", &ch);
-        if (ch == 'Y')
+        while (ch == 'Y')
             initUser(this);
-        else
-            return;
+        return;
     }
 
 }
