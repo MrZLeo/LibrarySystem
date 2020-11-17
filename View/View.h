@@ -6,26 +6,46 @@
 #define LIBRARY_SYSTEM_VIEW_H
 
 #include "../Basic.h"
+#include "../Model/Bookshelf.h"
 
-const int listLength = 2;
-const char menu[][14] = {"1.璐﹀彿鐧诲綍",
-                         "2.鍊熼槄鍥句功",};
+const int listLength = 7;
+const char menu[][14] = {"0.退出",
+                         "1.账号登录",
+                         "2.查看图书",
+                         "3.借阅图书",
+                         "4.归还图书",
+                         "5.上架新书",
+                         "6.丢弃旧书",
+};
 
 
 typedef struct view {
 
     void (*showMenu)();
 
-    void (*updateDetail)(struct view *this);
-} View;
+    void (*showBooks)(Bookshelf bookshelf);
+} *View;
 
-void showMenu() {
-    printf("娆㈣繋鏉ュ埌鍥句功棣哱n");
-    printf("璇峰厛瀹屾垚鐧诲綍锛歕n");
-    printf("浠ヤ笅涓烘偍鍙�夋嫨鐨勬搷浣滐細\n");
+void showMenu(View this) {
+    printf("以下为您可选择的操作：\n");
     for (int i = 0; i < listLength; ++i) {
         printf("%s\n", menu[i]);
     }
+}
+
+void showBooks(Bookshelf bookshelf) {
+    bookshelf->showBook(bookshelf);
+}
+
+View new_view() {
+    // 初始化内存
+    View view = malloc(sizeof(struct view));
+
+    // 初始化函数
+    view->showBooks = showBooks;
+    view->showMenu = showMenu;
+
+    return view;
 }
 
 #endif //LIBRARY_SYSTEM_VIEW_H

@@ -16,20 +16,22 @@ typedef enum authority {
     unknown = 3,
 } Authority;
 
-char *root_password = "yes！";
+char *root_password = "123456";
 static int wrongTimeOfRoot = 0;
 static int wrongTimeOfStudent = 0;
 const int MAX_TIMES_TO_TRY = 3;
 
 typedef struct user {
     Authority authority;
-    Book *borrowedBook;
-
+    Book **borrowedBook;
+    int borrowedBookNum;
 
     void (*initUser)(struct user *this);
 
-    Authority (*login)(struct user *this, const char *authority, const char *password,
-                       char *userName);
+    void (*login)(struct user *this, const char *authority, const char *password,
+                  char *userName);
+
+    void (*showBorrowedBooks)(struct user *this);
 
 } *User;
 
@@ -44,6 +46,7 @@ bool checkPassword(const char *userName, const char *password) {
         fgetchar();
         if (strcmp(user, userName) == 0) {
             if (strcmp(password, passwordInFIle) == 0) {
+                fclose(user_password);
                 return true;
             }
         }
@@ -80,10 +83,21 @@ void login(User this, const char *authority, const char *password, char *userNam
 
 }
 
+void getUserAndPassword(char *userName, char *password) {
+    if (strcmp(userName, "root") != 0) {
+        assert(strcmp(userName, "student"));
+
+        printf("请输入用户名：\n");
+        scanf("%s", userName);
+    }
+    printf("请输入密码：\n");
+    scanf("%s", password);
+}
+
 void initUser(User this) {
-    char userName[maxUserName];
-    char authority[8];
-    char password[maxPasswordLength];
+    char userName[maxUserName] = {0};
+    char authority[8] = {0};
+    char password[maxPasswordLength] = {0};
     printf("用户等级：\n");
     printf("1. 管理员（root），可以管理图书馆的书籍。\n");
     printf("2. 一般读者（viewer），只能查看图书馆的书籍。\n");
@@ -93,26 +107,33 @@ void initUser(User this) {
     if (strcmp(authority, "viewer") == 0) {
         login(this, authority, NULL, NULL);
     } else if (strcmp(authority, "root") == 0) {
-        printf("请输入密码：\n");
-        scanf("%s", password);
+        getUserAndPassword("root", password);
         login(this, authority, password, NULL);
+
+        if (this->authority == unknown) {
+
+            printf("是否重新输入？（Y/N）\n");
+            fflush(stdin);
+            char ch;
+            scanf("%c", &ch);
+            if (ch == 'Y') {
+                getUserAndPassword("root", password);
+                login(this, authority, password, userName);
+            }
+        }
+
     } else if (strcmp(authority, "student") == 0) {
-        printf("请输入用户名：\n");
-        scanf("%s", userName);
-        printf("请输入密码：\n");
-        scanf("%s", password);
+        getUserAndPassword(userName, password);
         login(this, authority, password, userName);
 
         if (this->authority == unknown) {
 
             printf("是否重新输入？（Y/N）\n");
+            fflush(stdin);
             char ch;
             scanf("%c", &ch);
             if (ch == 'Y') {
-                printf("请输入用户名：\n");
-                scanf("%s", userName);
-                printf("请输入密码：\n");
-                scanf("%s", password);
+                getUserAndPassword(userName, password);
                 login(this, authority, password, userName);
             }
         }
@@ -129,12 +150,22 @@ void initUser(User this) {
 
 }
 
+void showBorrowedBooks(User this) {
+    for (int i = 0; i < this->borrowedBookNum; ++i) {
+        printf("Book%d: %s\n", i, this->borrowedBook[i]->name);
+    }
+}
+
 User new_user() {
+    // 申请内存空间
     User user = malloc(sizeof(struct user));
+
+    // 数据初始化
     user->authority = unknown;
     user->borrowedBook = calloc(numOfBookInOneTime, sizeof(struct book));
     user->login = login;
     user->initUser = initUser;
+    user->showBorrowedBooks = showBorrowedBooks;
 
     return user;
 }

@@ -31,7 +31,9 @@ typedef struct bookshelf {
 
     void (*removeBook)(struct bookshelf *, char *bookName);
 
-    void (*setID)(struct bookshelf *);
+    void (*setID)(struct bookshelf *this);
+
+    void (*initBookshelf)(struct bookshelf *this);
 
 } *Bookshelf;
 
@@ -39,6 +41,10 @@ static int ID = 1;
 
 void setID(Bookshelf this) {
     ID = this->size + 1;
+}
+
+void initBookshelf(Bookshelf this) {
+
 }
 
 void free_Bookshelf(Bookshelf this) {

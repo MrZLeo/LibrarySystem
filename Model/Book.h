@@ -20,7 +20,14 @@ typedef struct book {
 Book *new_Book(int ID, char *name) {
     Book *book = (Book *) calloc(1, sizeof(Book));
     book->book_ID = ID;
-    book->name = name;
+
+    // 对char*要进一步处理
+    char *bookName = malloc(sizeof(char) * strlen(name));
+    for (int i = 0; name[i] != 0; ++i) {
+        bookName[i] = name[i];
+    }
+
+    book->name = bookName;
     book->left = NULL;
     book->right = NULL;
 
