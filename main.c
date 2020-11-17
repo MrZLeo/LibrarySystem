@@ -2,8 +2,8 @@
 // Created by MrZ on 2020-11-01.
 //
 
-#include "Book.h"
-#include "Bookshelf.h"
+#include "Model/Book.h"
+#include "Model/Bookshelf.h"
 
 int main() {
     Bookshelf bookshelf = new_bookshelf();

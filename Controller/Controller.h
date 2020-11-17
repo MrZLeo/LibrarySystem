@@ -5,11 +5,10 @@
 #ifndef LIBRARY_SYSTEM_CONTROLLER_H
 #define LIBRARY_SYSTEM_CONTROLLER_H
 
-#include "Basic.h"
-#include "View.h"
-#include "User.h"
-#include "Bookshelf.h"
-
+#include "../Basic.h"
+#include "../View/View.h"
+#include "../Model/Bookshelf.h"
+#include "../Model/User.h"
 
 typedef struct controller {
 

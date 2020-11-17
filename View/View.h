@@ -5,7 +5,7 @@
 #ifndef LIBRARY_SYSTEM_VIEW_H
 #define LIBRARY_SYSTEM_VIEW_H
 
-#include "Basic.h"
+#include "../Basic.h"
 
 const int listLength = 2;
 const char menu[][14] = {"1.账号登录",

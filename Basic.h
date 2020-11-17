@@ -18,6 +18,5 @@ typedef enum bool {
 #define numOfBookInOneTime 15
 #define maxPasswordLength 20
 #define maxUserName 20
-#define max 100005
 
 #endif //LIBRARY_SYSTEM_BASIC_H

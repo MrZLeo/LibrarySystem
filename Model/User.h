@@ -6,14 +6,14 @@
 #define LIBRARY_SYSTEM_USER_H
 
 #include <string.h>
-#include "Basic.h"
+#include "../Basic.h"
 #include "Book.h"
 
 typedef enum right {
     root = 0,
     student = 1,
     viewer = 2,
-    unknown = 3;
+    unknown = 3,
 } Right;
 
 char *root_password = "yes£¡";
