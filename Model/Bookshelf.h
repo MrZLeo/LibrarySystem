@@ -43,6 +43,7 @@ void setID(Bookshelf this) {
     ID = this->size + 1;
 }
 
+// TODO 读取文件中的书籍资料
 void initBookshelf(Bookshelf this) {
 
 }

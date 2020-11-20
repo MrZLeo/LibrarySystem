@@ -162,6 +162,9 @@ User new_user() {
     // 数据初始化
     user->authority = unknown;
     user->borrowedBook = calloc(numOfBookInOneTime, sizeof(struct book));
+    user->borrowedBookNum = 0;
+    
+    // 函数初始化
     user->login = login;
     user->initUser = initUser;
     user->showBorrowedBooks = showBorrowedBooks;

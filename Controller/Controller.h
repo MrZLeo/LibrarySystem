@@ -109,7 +109,6 @@ void removeBookInBookshelf(Controller this, char *bookName) {
     this->bookshelf->removeBook(this->bookshelf, bookName);
 }
 
-//
 //void throwAllBooks(Controller this) {
 //    this->bookshelf->free_Bookshelf(this->bookshelf);
 //}
@@ -117,6 +116,10 @@ void removeBookInBookshelf(Controller this, char *bookName) {
 void run(Controller this) {
     bool isToStop = false;
     printf("欢迎来到图书馆\n");
+
+    // TODO 进入图书馆后的第一步应该要将文件中的书籍读入系统进行动态处理。
+    // ...
+
     printf("请先登录账号：\n");
     char bookName[maxBookName] = {0};
     while (!isToStop) {
@@ -127,6 +130,8 @@ void run(Controller this) {
         fflush(stdin);
         switch (info) {
             case 0:
+                // TODO 关闭前需要将当前书籍存储到文件内。
+                // ...
                 printf("---------END---------\n");
                 isToStop = true;
                 break;
@@ -182,11 +187,6 @@ void run(Controller this) {
 Controller new_controller() {
     // 初始化内存
     Controller controller = malloc(sizeof(struct controller));
-
-    // 初始化属性
-    View view = new_view();
-    User user = new_user();
-    Bookshelf bookshelf = new_bookshelf();
 
     // 初始化函数
     controller->setController = setController;
