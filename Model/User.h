@@ -25,6 +25,7 @@ typedef struct user {
     Authority authority;
     Book **borrowedBook;
     int borrowedBookNum;
+    char *userName;
 
     void (*initUser)(struct user *this);
 
@@ -72,6 +73,7 @@ void login(User this, const char *authority, const char *password, char *userNam
     } else if (strcmp(authority, "student") == 0) {
         if (checkPassword(userName, password) == true) {
             this->authority = student;
+            this->userName = strcpy(this->userName, userName);
         } else {
             wrongTimeOfStudent++;
             if (wrongTimeOfStudent < MAX_TIMES_TO_TRY)
@@ -163,6 +165,7 @@ User new_user() {
     user->authority = unknown;
     user->borrowedBook = calloc(numOfBookInOneTime, sizeof(struct book));
     user->borrowedBookNum = 0;
+    user->userName = calloc(maxUserName, sizeof(char));
     
     // º¯Êý³õÊ¼»¯
     user->login = login;

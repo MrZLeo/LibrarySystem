@@ -22,12 +22,10 @@ Book *new_Book(int ID, char *name) {
     book->book_ID = ID;
 
     // 对char*要进一步处理
-    char *bookName = malloc(sizeof(char) * strlen(name));
-    for (int i = 0; name[i] != 0; ++i) {
-        bookName[i] = name[i];
-    }
+    book->name = malloc(sizeof(char) * strlen(name));
+    // FIXME 段错误：about this
+    strcpy(book->name, name);
 
-    book->name = bookName;
     book->left = NULL;
     book->right = NULL;
 

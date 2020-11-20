@@ -38,6 +38,14 @@ typedef struct controller {
 
     void (*removeBookInBookshelf)(struct controller *this, char *bookName);
 
+    bool (*runRoot)(struct controller *this, int info);
+
+    bool (*runStudent)(struct controller *this, int info);
+
+    bool (*runViewer)(struct controller *this, int info);
+
+    bool (*runInDifferentLayer)(struct controller *this, int info);
+
     void (*run)(struct controller *this);
 
 } *Controller;
@@ -109,79 +117,137 @@ void removeBookInBookshelf(Controller this, char *bookName) {
     this->bookshelf->removeBook(this->bookshelf, bookName);
 }
 
-//void throwAllBooks(Controller this) {
-//    this->bookshelf->free_Bookshelf(this->bookshelf);
-//}
+bool runRoot(Controller this, int info) {
+    switch (info) {
+        case 1:
+            this->readBooks(this);
+            break;
+        case 2: {
+            char bookName[maxBookName];
+            scanf("%s", bookName);
+            this->addBookToBookshelf(this, bookName);
+            break;
+        }
+        case 3: {
+            char bookName[maxBookName];
+            scanf("%s", bookName);
+            this->removeBookInBookshelf(this, bookName);
+            break;
+        }
+        case 4:
+            this->view->layer--;
+            system("cls");
+            break;
+        case 5:
+        default:
+            return true;
+    }
 
+    return false;
+}
+
+bool runStudent(Controller this, int info) {
+    switch (info) {
+        case 1:
+            this->readBooks(this);
+            break;
+        case 2: {
+            char bookName[maxBookName];
+            scanf("%s", bookName);
+            this->borrowBook(this, bookName);
+            break;
+        }
+        case 3: {
+            char bookName[maxBookName];
+            scanf("%s", bookName);
+            this->returnBook(this, bookName);
+            break;
+        }
+        case 4:
+            this->view->layer--;
+            system("cls");
+            break;
+        case 5:
+        default:
+            return true;
+    }
+
+    return false;
+}
+
+bool runViewer(Controller this, int info) {
+    switch (info) {
+        case 1:
+            this->readBooks(this);
+            break;
+        case 2:
+            this->view->layer--;
+            system("cls");
+            break;
+        case 3:
+        default:
+            return true;
+    }
+
+    return false;
+}
+
+/**
+ * 根据不同的layer进行不同的处理
+ * @param this
+ * @param layer 当前菜单的层数
+ * @param info 执行的菜单命令
+ * @return 是否退出程序
+ */
+bool runInDifferentLayer(Controller this, int info) {
+    if (this->view->layer == first) {
+        switch (info) {
+            case 1:
+                this->user_login(this);
+                this->view->layer++;
+                system("cls");
+                return false;
+            case 0:
+            default: // TODO 这里是否需要容错机制？
+                return true;
+        }
+    } else { // layer == second
+        assert(this->view->layer == second);
+
+        // 知道 layer==second 还不能解决问题，这里还得分user处理.
+        // TODO 是全部写在一起，还是再度抽象？ A：再度抽象
+        switch (this->user->authority) {
+            case root:
+                return this->runRoot(this, info);
+            case student:
+                return this->runStudent(this, info);
+            case viewer:
+                return this->runViewer(this, info);
+            default:
+                return true;
+        }
+    }
+
+}
+
+/**
+ * 系统运行主函数
+ */
 void run(Controller this) {
     bool isToStop = false;
-    printf("欢迎来到图书馆\n");
 
     // TODO 进入图书馆后的第一步应该要将文件中的书籍读入系统进行动态处理。
     // ...
 
-    printf("请先登录账号：\n");
-    char bookName[maxBookName] = {0};
+    // 不仅仅是view需要知道layer，controller也需要
     while (!isToStop) {
-        this->view->showMenu();
-        int info;
+        this->view->show(this->view, this->user);
+        int info = 0;
         scanf("%d", &info);
-
-        fflush(stdin);
-        switch (info) {
-            case 0:
-                // TODO 关闭前需要将当前书籍存储到文件内。
-                // ...
-                printf("---------END---------\n");
-                isToStop = true;
-                break;
-
-            case 1:
-                this->user_login(this);
-                break;
-
-            case 2:
-                assert(this->user->authority != unknown);
-                this->readBooks(this);
-                break;
-
-            case 3:
-                assert(this->user->authority == student);
-                printf("当前图书馆拥有的图书：\n");
-                this->readBooks(this);
-                printf("请输入你想借阅的图书：\n");
-                scanf("%s", bookName);
-                this->borrowBook(this, bookName);
-                break;
-
-            case 4:
-                assert(this->user->authority == student);
-                printf("你已借阅的图书：\n");
-                this->showUserBorrowedBook(this);
-                break;
-
-            case 5:
-                assert(this->user->authority == root);
-                printf("请输入你想要上架的新书名称：\n");
-                scanf("%s", bookName);
-                this->addBookToBookshelf(this, bookName);
-                break;
-
-            case 6:
-                assert(this->user->authority == root);
-                printf("请输入你想要丢弃的旧书名称：\n");
-                scanf("%s", bookName);
-                this->removeBookInBookshelf(this, bookName);
-                break;
-
-            default:
-                printf("输入错误。\n");
-                break;
-        }
+        isToStop = this->runInDifferentLayer(this, info);
     }
 
-
-    printf("no bug!\n");
+    printf("--------END--------\n");
 }
 
 Controller new_controller() {
@@ -199,6 +265,10 @@ Controller new_controller() {
     controller->addBookToBookshelf = addBookToBookshelf;
     controller->findBookInBookshelf = findBookInBookshelf;
     controller->removeBookInBookshelf = removeBookInBookshelf;
+    controller->runInDifferentLayer = runInDifferentLayer;
+    controller->runRoot = runRoot;
+    controller->runStudent = runStudent;
+    controller->runViewer = runViewer;
     controller->run = run;
 
     return controller;
