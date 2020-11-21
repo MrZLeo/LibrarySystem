@@ -32,11 +32,13 @@ typedef struct controller {
 
     void (*readBooks)(struct controller *this);
 
-    void (*addBookToBookshelf)(struct controller *this, char *bookName);
+    bool (*addBookToBookshelf)(struct controller *this, char *bookName);
 
     void (*findBookInBookshelf)(struct controller *this, char *bookName);
 
-    void (*removeBookInBookshelf)(struct controller *this, char *bookName);
+    bool (*removeBookInBookshelf)(struct controller *this, char *bookName);
+
+    void (*loadBook)(struct controller *this, FILE *books);
 
     bool (*runRoot)(struct controller *this, int info);
 
@@ -71,8 +73,10 @@ void borrowBook(Controller this, char *bookName) {
 
     Book *book = new_Book(bookID, bookName);
     this->user->borrowedBook[++this->user->borrowedBookNum] = book;
+    printf("借阅成功\n");
 }
 
+// FIXME 不知道问题在哪，晚点debug
 void returnBook(Controller this, char *bookName) {
 
     for (int i = 0; i < this->user->borrowedBookNum; ++i) {
@@ -81,6 +85,7 @@ void returnBook(Controller this, char *bookName) {
                 this->user->borrowedBook[j] = this->user->borrowedBook[j + 1];
             }
             this->user->borrowedBookNum--;
+            printf("还书成功\n");
             return;
         }
     }
@@ -105,33 +110,52 @@ void readBooks(Controller this) {
     this->view->showBooks(this->bookshelf);
 }
 
-void addBookToBookshelf(Controller this, char *bookName) {
-    this->bookshelf->addBook(this->bookshelf, bookName);
+bool addBookToBookshelf(Controller this, char *bookName) {
+    return this->bookshelf->addBook(this->bookshelf, bookName);
 }
 
 void findBookInBookshelf(Controller this, char *bookName) {
     this->bookshelf->findBook(this->bookshelf, bookName);
 }
 
-void removeBookInBookshelf(Controller this, char *bookName) {
-    this->bookshelf->removeBook(this->bookshelf, bookName);
+bool removeBookInBookshelf(Controller this, char *bookName) {
+    return this->bookshelf->removeBook(this->bookshelf, bookName);
+}
+
+void loadBook(Controller this, FILE *books) {
+    while (!feof(books)) {
+        char bookName[maxBookName];
+        fscanf(books, "%s", bookName);
+        this->addBookToBookshelf(this, bookName);
+    }
+    fclose(books);
 }
 
 bool runRoot(Controller this, int info) {
     switch (info) {
         case 1:
+            printf("馆藏图书：\n");
             this->readBooks(this);
+            system("pause");
             break;
         case 2: {
+            printf("请输入书名: ");
             char bookName[maxBookName];
             scanf("%s", bookName);
-            this->addBookToBookshelf(this, bookName);
+            if (this->addBookToBookshelf(this, bookName)) {
+                printf("添加成功\n");
+                system("pause");
+            }
             break;
         }
         case 3: {
+            printf("请输入书名: ");
             char bookName[maxBookName];
             scanf("%s", bookName);
-            this->removeBookInBookshelf(this, bookName);
+            if (this->removeBookInBookshelf(this, bookName)) {
+                printf("删除成功\n");
+                system("pause");
+            }
             break;
         }
         case 4:
@@ -149,15 +173,19 @@ bool runRoot(Controller this, int info) {
 bool runStudent(Controller this, int info) {
     switch (info) {
         case 1:
+            printf("馆藏图书：\n");
             this->readBooks(this);
+            system("pause");
             break;
         case 2: {
+            printf("请输入书名: ");
             char bookName[maxBookName];
             scanf("%s", bookName);
             this->borrowBook(this, bookName);
             break;
         }
         case 3: {
+            printf("请输入书名: ");
             char bookName[maxBookName];
             scanf("%s", bookName);
             this->returnBook(this, bookName);
@@ -178,7 +206,9 @@ bool runStudent(Controller this, int info) {
 bool runViewer(Controller this, int info) {
     switch (info) {
         case 1:
+            printf("馆藏图书：\n");
             this->readBooks(this);
+            system("pause");
             break;
         case 2:
             this->view->layer--;
@@ -237,7 +267,7 @@ void run(Controller this) {
     bool isToStop = false;
 
     // TODO 进入图书馆后的第一步应该要将文件中的书籍读入系统进行动态处理。
-    // ...
+    this->loadBook(this, fopen("../books.txt", "r"));
 
     // 不仅仅是view需要知道layer，controller也需要
     while (!isToStop) {
@@ -265,6 +295,7 @@ Controller new_controller() {
     controller->addBookToBookshelf = addBookToBookshelf;
     controller->findBookInBookshelf = findBookInBookshelf;
     controller->removeBookInBookshelf = removeBookInBookshelf;
+    controller->loadBook = loadBook;
     controller->runInDifferentLayer = runInDifferentLayer;
     controller->runRoot = runRoot;
     controller->runStudent = runStudent;

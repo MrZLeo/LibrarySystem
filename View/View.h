@@ -123,7 +123,7 @@ void showUser(User user) {
 
 // TODO 添加不同级菜单的管理
 void show(View this, User user) {
-
+    system("cls");
     if (this->layer == first) {
         printf("欢迎来到图书馆。\n");
         printf("请先登录您的帐号：\n");

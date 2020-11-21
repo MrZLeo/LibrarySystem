@@ -23,13 +23,13 @@ typedef struct bookshelf {
 
     int (*getSize)(struct bookshelf *);
 
-    void (*addBook)(struct bookshelf *, char *);
+    bool (*addBook)(struct bookshelf *, char *);
 
     int (*findBook)(struct bookshelf *, char *);
 
     void (*showBook)(struct bookshelf *);
 
-    void (*removeBook)(struct bookshelf *, char *bookName);
+    bool (*removeBook)(struct bookshelf *, char *bookName);
 
     void (*setID)(struct bookshelf *this);
 
@@ -65,7 +65,6 @@ Book *addBook__(Bookshelf bookshelf, Book *book, int bookID, char *bookName) {
 
     if (book == NULL) {
         bookshelf->size++;
-        printf("添加成功\n");
         return new_Book(bookID, bookName);
     }
 
@@ -80,9 +79,11 @@ Book *addBook__(Bookshelf bookshelf, Book *book, int bookID, char *bookName) {
     return book;
 }
 
-void addBook(Bookshelf bookshelf, char *bookName) {
+bool addBook(Bookshelf bookshelf, char *bookName) {
     assert(bookshelf != NULL);
+    int rootSize = bookshelf->size;
     bookshelf->root_book = addBook__(bookshelf, bookshelf->root_book, ID++, bookName);
+    return rootSize + 1 == bookshelf->size;
 }
 
 int findBook__(Book *book, char *bookName) {
@@ -178,10 +179,12 @@ Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
 
 }
 
-void removeBook(Bookshelf this, char *bookName) {
+// FIXME 删除根结点会出问题
+bool removeBook(Bookshelf this, char *bookName) {
     assert(this != NULL);
-
+    int rootSize = this->size;
     this->root_book = removeBook__(this, this->root_book, bookName);
+    return rootSize - 1 == this->size;
 }
 
 

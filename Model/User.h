@@ -37,11 +37,11 @@ typedef struct user {
 } *User;
 
 bool checkPassword(const char *userName, const char *password) {
-    FILE *user_password = fopen("user_password.txt", "r");
+    FILE *user_password = fopen("../user_password.txt", "r");
 
     while (!feof(user_password)) {
-        char *user = NULL;
-        char *passwordInFIle = NULL;
+        char user[maxUserName];
+        char passwordInFIle[maxPasswordLength];
         fscanf(user_password, "%s", user);
         fscanf(user_password, "%s", passwordInFIle);
         fgetchar();
@@ -67,6 +67,7 @@ void login(User this, const char *authority, const char *password, char *userNam
                 printf("密码错误\n");
             else {
                 printf("输入管理员密码错误超过三次，系统自动退出。\n");
+                system("pause");
                 exit(-1);
             }
         }
@@ -163,10 +164,13 @@ User new_user() {
 
     // 数据初始化
     user->authority = unknown;
-    user->borrowedBook = calloc(numOfBookInOneTime, sizeof(struct book));
+    user->borrowedBook = (Book **) calloc(numOfBookInOneTime, sizeof(Book *));
+    for (int i = 0; i < numOfBookInOneTime; ++i) {
+        user->borrowedBook[i] = (Book *) calloc(1, sizeof(struct book));
+    }
     user->borrowedBookNum = 0;
     user->userName = calloc(maxUserName, sizeof(char));
-    
+
     // 函数初始化
     user->login = login;
     user->initUser = initUser;

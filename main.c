@@ -12,6 +12,5 @@ int main() {
     controller->setController(controller, view, bookshelf, user);
 
     controller->run(controller);
-
     return 0;
 }
