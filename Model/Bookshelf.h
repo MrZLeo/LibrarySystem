@@ -129,10 +129,17 @@ Book *findMax(Book *book) {
     return cur;
 }
 
-void removeMax(Bookshelf bookshelf, Book *book) {
-    Book *maxBook = findMax(book);
-    free(maxBook);
-    bookshelf->size--;
+Book *removeMax(Bookshelf bookshelf, Book *book) {
+
+    if (book->right == NULL) {
+        Book *leftBook = book->left;
+        free(book);
+        bookshelf->size--;
+        return leftBook;
+    }
+
+    book->right = removeMax(bookshelf, book->right);
+    return book;
 }
 
 Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
@@ -163,12 +170,10 @@ Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
         }
 
         // 左右都不为空
-        Book *maxBook = findMax(book->left);
-        maxBook = new_Book(maxBook->book_ID, maxBook->name);
+        Book *maxBook = new_Book(findMax(book->left)->book_ID, findMax(book->left)->name);
         bookshelf->size++;
 
-        removeMax(bookshelf, book);
-        maxBook->left = book->left;
+        maxBook->left = removeMax(bookshelf, book->left);
         maxBook->right = book->right;
 
         free(book);
@@ -179,7 +184,6 @@ Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
 
 }
 
-// FIXME 删除根结点会出问题
 bool removeBook(Bookshelf this, char *bookName) {
     assert(this != NULL);
     int rootSize = this->size;
