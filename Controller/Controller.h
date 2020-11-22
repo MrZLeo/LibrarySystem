@@ -20,6 +20,8 @@ typedef struct controller {
 
     void (*user_login)(struct controller *this);
 
+    void (*user_signUp)(struct controller *this);
+
     void (*user_changePassword)(struct controller *this);
 
     void (*userBorrowBook)(struct controller *this, char *bookName);
@@ -61,6 +63,10 @@ void setController(Controller this, View view, Bookshelf bookshelf, User user) {
 
 void user_login(Controller this) {
     this->user->initUser(this->user);
+}
+
+void user_signUp(Controller this) {
+    this->user->signUp(this->user);
 }
 
 void user_changePassword(Controller this) {
@@ -195,6 +201,7 @@ bool runStudent(Controller this, int info) {
             break;
         case 6:
             this->user_changePassword(this);
+            printf("修改成功。\n");
             system("pause");
             break;
         case 7:
@@ -240,8 +247,11 @@ bool runInDifferentLayer(Controller this, int info) {
                 this->view->layer++;
                 system("cls");
                 return false;
-            case 2:
-                // TODO 加一个注册功能
+            case 2: {
+                this->user_signUp(this);
+                system("pause");
+                break;
+            }
             case 0:
             default: // TODO 这里是否需要容错机制？
                 return true;
@@ -295,6 +305,7 @@ Controller new_controller() {
     // 初始化函数
     controller->setController = setController;
     controller->user_login = user_login;
+    controller->user_signUp = user_signUp;
     controller->user_changePassword = user_changePassword;
     controller->userBorrowBook = userBorrowBook;
     controller->userReturnBook = userReturnBook;

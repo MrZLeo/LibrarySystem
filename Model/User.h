@@ -33,6 +33,8 @@ typedef struct user {
     void (*login)(struct user *this, const char *authority, const char *password,
                   char *userName);
 
+    void (*signUp)(struct user *this);
+
     void (*changePassword)(struct user *this);
 
     void (*storeNewPassword)(struct user *this, char *newPassword);
@@ -104,6 +106,36 @@ void getUserAndPassword(char *userName, char *password) {
     scanf("%s", password);
 }
 
+/**
+ * 注册操作
+ * @param this
+ */
+void signUp(User this) {
+    char userName[maxUserName];
+    char password[maxPasswordLength];
+    getUserAndPassword(userName, password);
+    printf("请再输入一次密码：\n");
+    char checkPassword[maxPasswordLength];
+    scanf("%s", checkPassword);
+    if (strcmp(checkPassword, password) == 0) {
+        FILE *user_password_file = fopen(userAndPasswordFile, "a");
+        fprintf(user_password_file, "%s\t%s\n", userName, password);
+        printf("注册成功\n");
+        fclose(user_password_file);
+        return;
+    } else {
+        printf("两次输入的密码不同，请重新注册。\n");
+        char ch;
+        printf("是否重新注册？（Y/N）\n");
+        scanf("%c", &ch);
+        if (ch == 'Y') {
+            signUp(this);
+        } else
+            return;
+    }
+
+}
+
 void initUser(User this) {
     char userName[maxUserName] = {0};
     char authority[8] = {0};
@@ -162,6 +194,12 @@ void initUser(User this) {
 
 }
 
+/**
+ * 修改账号密码
+ * 才用两次检验的原则防止用户出现非受迫错误
+ * @param this
+ * @param newPassword 新密码
+ */
 void storeNewPassword(User this, char *newPassword) {
     // 这里应该是修改文件原有的密码
     // 但要小心不要抹去其他用户的账号和密码
@@ -241,6 +279,7 @@ User new_user() {
 
     // 函数初始化
     user->login = login;
+    user->signUp = signUp;
     user->initUser = initUser;
     user->changePassword = changePassword;
     user->storeNewPassword = storeNewPassword;
