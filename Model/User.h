@@ -20,6 +20,7 @@ char *root_password = "123456";
 static int wrongTimeOfRoot = 0;
 static int wrongTimeOfStudent = 0;
 const int MAX_TIMES_TO_TRY = 3;
+const char *userAndPasswordFile = "../user_password.txt";
 
 typedef struct user {
     Authority authority;
@@ -32,6 +33,10 @@ typedef struct user {
     void (*login)(struct user *this, const char *authority, const char *password,
                   char *userName);
 
+    void (*changePassword)(struct user *this);
+
+    void (*storeNewPassword)(struct user *this, char *newPassword);
+
     void (*showBorrowedBooks)(struct user *this);
 
     void (*returnBook)(struct user *this, char *bookName);
@@ -39,7 +44,7 @@ typedef struct user {
 } *User;
 
 bool checkPassword(const char *userName, const char *password) {
-    FILE *user_password = fopen("../user_password.txt", "r");
+    FILE *user_password = fopen(userAndPasswordFile, "r");
 
     while (!feof(user_password)) {
         char user[maxUserName];
@@ -157,6 +162,47 @@ void initUser(User this) {
 
 }
 
+void storeNewPassword(User this, char *newPassword) {
+    // 这里应该是修改文件原有的密码
+    // 但要小心不要抹去其他用户的账号和密码
+    FILE *passwordFile = fopen(userAndPasswordFile, "r");
+    FILE *newPasswordFile = fopen("../newPasswordFile.txt", "w");
+    while (!feof(passwordFile)) {
+        char userName[maxUserName];
+        char userPassword[maxPasswordLength];
+        fscanf(passwordFile, "%s %s", userName, userPassword);
+        fprintf(newPasswordFile, "%s\t", userName);
+        if (strcmp(this->userName, userName) == 0) {
+            fprintf(newPasswordFile, "%s\n", newPassword);
+        } else {
+            fprintf(newPasswordFile, "%s\n", userPassword);
+        }
+    }
+    fclose(passwordFile);
+    fclose(newPasswordFile);
+    rename("../newPasswordFile.txt", "user_password.txt");
+}
+
+void changePassword(User this) {
+    printf("请输入原密码：\n");
+    char password[maxPasswordLength];
+    scanf("%s", password);
+    if (checkPassword(this->userName, password) == true) {
+        printf("请输入新密码：\n");
+        scanf("%s", password);
+        char newPassword[maxPasswordLength];
+        printf("请再输入一次新密码：\n");
+        scanf("%s", newPassword);
+        if (strcmp(password, newPassword) == 0) {
+            // 修改密码
+            this->storeNewPassword(this, newPassword);
+            return;
+        }
+    } else {
+        printf("密码错误");
+    }
+}
+
 void showBorrowedBooks(User this) {
     Book *prevBook = this->borrowedBook;
     int num = 0;
@@ -196,6 +242,8 @@ User new_user() {
     // 函数初始化
     user->login = login;
     user->initUser = initUser;
+    user->changePassword = changePassword;
+    user->storeNewPassword = storeNewPassword;
     user->showBorrowedBooks = showBorrowedBooks;
     user->returnBook = returnBook;
 

@@ -5,6 +5,7 @@
 #include "Controller/Controller.h"
 
 int main() {
+
     Controller controller = new_controller();
     View view = new_view();
     User user = new_user();
@@ -12,5 +13,6 @@ int main() {
     controller->setController(controller, view, bookshelf, user);
 
     controller->run(controller);
+
     return 0;
 }

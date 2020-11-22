@@ -20,6 +20,8 @@ typedef struct controller {
 
     void (*user_login)(struct controller *this);
 
+    void (*user_changePassword)(struct controller *this);
+
     void (*userBorrowBook)(struct controller *this, char *bookName);
 
     void (*userReturnBook)(struct controller *this, char *bookName);
@@ -59,6 +61,10 @@ void setController(Controller this, View view, Bookshelf bookshelf, User user) {
 
 void user_login(Controller this) {
     this->user->initUser(this->user);
+}
+
+void user_changePassword(Controller this) {
+    this->user->changePassword(this->user);
 }
 
 void userBorrowBook(Controller this, char *bookName) {
@@ -188,7 +194,9 @@ bool runStudent(Controller this, int info) {
             system("cls");
             break;
         case 6:
-            // TODO 修改密码
+            this->user_changePassword(this);
+            system("pause");
+            break;
         case 7:
         default:
             return true;
@@ -287,6 +295,7 @@ Controller new_controller() {
     // 初始化函数
     controller->setController = setController;
     controller->user_login = user_login;
+    controller->user_changePassword = user_changePassword;
     controller->userBorrowBook = userBorrowBook;
     controller->userReturnBook = userReturnBook;
     controller->showUserBorrowedBook = showUserBorrowedBook;
