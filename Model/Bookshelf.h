@@ -31,21 +31,19 @@ typedef struct bookshelf {
 
     bool (*removeBook)(struct bookshelf *, char *bookName);
 
-    void (*setID)(struct bookshelf *this);
-
-    void (*initBookshelf)(struct bookshelf *this);
+    void (*initBookshelf)(struct bookshelf *this, FILE *books);
 
 } *Bookshelf;
 
 static int ID = 1;
 
-void setID(Bookshelf this) {
-    ID = this->size + 1;
-}
-
-// TODO 读取文件中的书籍资料
-void initBookshelf(Bookshelf this) {
-
+void initBookshelf(Bookshelf this, FILE *books) {
+    while (!feof(books)) {
+        char bookName[maxBookName];
+        fscanf(books, "%s", bookName);
+        this->addBook(this, bookName);
+    }
+    fclose(books);
 }
 
 void free_Bookshelf(Bookshelf this) {
@@ -208,7 +206,7 @@ Bookshelf new_bookshelf() {
     bookshelf->findBook = findBook;
     bookshelf->showBook = showBook;
     bookshelf->removeBook = removeBook;
-    bookshelf->setID = setID;
+    bookshelf->initBookshelf = initBookshelf;
 
     return bookshelf;
 }

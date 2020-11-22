@@ -20,15 +20,15 @@ typedef struct controller {
 
     void (*user_login)(struct controller *this);
 
-    void (*borrowBook)(struct controller *this, char *bookName);
+    void (*userBorrowBook)(struct controller *this, char *bookName);
 
-    void (*returnBook)(struct controller *this, char *bookName);
+    void (*userReturnBook)(struct controller *this, char *bookName);
 
     void (*showUserBorrowedBook)(struct controller *this);
 
     void (*bookshelf_setID)(struct controller *this);
 
-    void (*init_bookshelf)(struct controller *this);
+    void (*init_bookshelf)(struct controller *this, FILE *books);
 
     void (*readBooks)(struct controller *this);
 
@@ -37,8 +37,6 @@ typedef struct controller {
     void (*findBookInBookshelf)(struct controller *this, char *bookName);
 
     bool (*removeBookInBookshelf)(struct controller *this, char *bookName);
-
-    void (*loadBook)(struct controller *this, FILE *books);
 
     bool (*runRoot)(struct controller *this, int info);
 
@@ -63,47 +61,41 @@ void user_login(Controller this) {
     this->user->initUser(this->user);
 }
 
-void borrowBook(Controller this, char *bookName) {
+void userBorrowBook(Controller this, char *bookName) {
+
+    if (this->user->borrowedBookNum == numOfBookInOneTime) {
+        printf("以达到同时借阅书籍上限\n");
+        system("pause");
+        return;
+    }
 
     int bookID = this->bookshelf->findBook(this->bookshelf, bookName);
     if (bookID == -1) {
         printf("没有找到这本书\n");
+        system("pause");
         return;
     }
 
     Book *book = new_Book(bookID, bookName);
-    this->user->borrowedBook[++this->user->borrowedBookNum] = book;
+    Book *prevBook = this->user->borrowedBook;
+    while (prevBook->right != NULL)
+        prevBook = prevBook->right;
+    prevBook->right = book;
+    this->user->borrowedBookNum++;
     printf("借阅成功\n");
 }
 
 // FIXME 不知道问题在哪，晚点debug
-void returnBook(Controller this, char *bookName) {
-
-    for (int i = 0; i < this->user->borrowedBookNum; ++i) {
-        if (strcmp(this->user->borrowedBook[i]->name, bookName) == 0) {
-            for (int j = i; j < this->user->borrowedBookNum; ++j) {
-                this->user->borrowedBook[j] = this->user->borrowedBook[j + 1];
-            }
-            this->user->borrowedBookNum--;
-            printf("还书成功\n");
-            return;
-        }
-    }
-
-    // 如果没找到
-    printf("没有借阅这本书\n");
+void userReturnBook(Controller this, char *bookName) {
+    return this->user->returnBook(this->user, bookName);
 }
 
 void showUserBorrowedBook(Controller this) {
     this->user->showBorrowedBooks(this->user);
 }
 
-void bookshelf_setID(Controller this) {
-    this->bookshelf->setID(this->bookshelf);
-}
-
-void init_bookshelf(Controller this) {
-    this->bookshelf->initBookshelf(this->bookshelf);
+void init_bookshelf(Controller this, FILE *books) {
+    this->bookshelf->initBookshelf(this->bookshelf, books);
 }
 
 void readBooks(Controller this) {
@@ -120,15 +112,6 @@ void findBookInBookshelf(Controller this, char *bookName) {
 
 bool removeBookInBookshelf(Controller this, char *bookName) {
     return this->bookshelf->removeBook(this->bookshelf, bookName);
-}
-
-void loadBook(Controller this, FILE *books) {
-    while (!feof(books)) {
-        char bookName[maxBookName];
-        fscanf(books, "%s", bookName);
-        this->addBookToBookshelf(this, bookName);
-    }
-    fclose(books);
 }
 
 bool runRoot(Controller this, int info) {
@@ -181,14 +164,14 @@ bool runStudent(Controller this, int info) {
             printf("请输入书名: ");
             char bookName[maxBookName];
             scanf("%s", bookName);
-            this->borrowBook(this, bookName);
+            this->userBorrowBook(this, bookName);
             break;
         }
         case 3: {
             printf("请输入书名: ");
             char bookName[maxBookName];
             scanf("%s", bookName);
-            this->returnBook(this, bookName);
+            this->userReturnBook(this, bookName);
             break;
         }
         case 4:
@@ -267,7 +250,7 @@ void run(Controller this) {
     bool isToStop = false;
 
     // TODO 进入图书馆后的第一步应该要将文件中的书籍读入系统进行动态处理。
-    this->loadBook(this, fopen("../books.txt", "r"));
+    this->init_bookshelf(this, fopen("../books.txt", "r"));
 
     // 不仅仅是view需要知道layer，controller也需要
     while (!isToStop) {
@@ -287,15 +270,14 @@ Controller new_controller() {
     // 初始化函数
     controller->setController = setController;
     controller->user_login = user_login;
-    controller->borrowBook = borrowBook;
-    controller->returnBook = returnBook;
+    controller->userBorrowBook = userBorrowBook;
+    controller->userReturnBook = userReturnBook;
     controller->showUserBorrowedBook = showUserBorrowedBook;
     controller->init_bookshelf = init_bookshelf;
     controller->readBooks = readBooks;
     controller->addBookToBookshelf = addBookToBookshelf;
     controller->findBookInBookshelf = findBookInBookshelf;
     controller->removeBookInBookshelf = removeBookInBookshelf;
-    controller->loadBook = loadBook;
     controller->runInDifferentLayer = runInDifferentLayer;
     controller->runRoot = runRoot;
     controller->runStudent = runStudent;

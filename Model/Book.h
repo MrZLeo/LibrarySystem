@@ -23,7 +23,6 @@ Book *new_Book(int ID, char *name) {
 
     // 对char*要进一步处理
     book->name = malloc(sizeof(char) * strlen(name));
-    // FIXME 段错误：about this
     strcpy(book->name, name);
 
     book->left = NULL;

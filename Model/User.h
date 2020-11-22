@@ -23,7 +23,7 @@ const int MAX_TIMES_TO_TRY = 3;
 
 typedef struct user {
     Authority authority;
-    Book **borrowedBook;
+    Book *borrowedBook;
     int borrowedBookNum;
     char *userName;
 
@@ -33,6 +33,8 @@ typedef struct user {
                   char *userName);
 
     void (*showBorrowedBooks)(struct user *this);
+
+    void (*returnBook)(struct user *this, char *bookName);
 
 } *User;
 
@@ -122,7 +124,8 @@ void initUser(User this) {
             if (ch == 'Y') {
                 getUserAndPassword("root", password);
                 this->login(this, authority, password, userName);
-            }
+            } else
+                exit(-1);
         }
 
     } else if (strcmp(authority, "student") == 0) {
@@ -138,6 +141,8 @@ void initUser(User this) {
             if (ch == 'Y') {
                 getUserAndPassword(userName, password);
                 this->login(this, authority, password, userName);
+            } else {
+                exit(-1);
             }
         }
 
@@ -153,9 +158,28 @@ void initUser(User this) {
 }
 
 void showBorrowedBooks(User this) {
-    for (int i = 0; i < this->borrowedBookNum; ++i) {
-        printf("Book%d: %s\n", i, this->borrowedBook[i]->name);
+    Book *prevBook = this->borrowedBook;
+    int num = 0;
+    while (prevBook->right != NULL) {
+        Book *curBook = prevBook->right;
+        printf("book %d : 《%s》, bookID: %d", num++, curBook->name, curBook->book_ID);
     }
+}
+
+void returnBook(User this, char *bookName) {
+    Book *prevBook = this->borrowedBook;
+    while (prevBook->right != NULL) {
+        if (strcmp(prevBook->right->name, bookName) == 0) {
+            Book *delBook = prevBook->right;
+            prevBook->right = delBook->right;
+            free(delBook);
+            this->borrowedBookNum--;
+            return;
+        }
+        prevBook = prevBook->right;
+    }
+
+    printf("没有借阅这本书\n");
 }
 
 User new_user() {
@@ -164,10 +188,7 @@ User new_user() {
 
     // 数据初始化
     user->authority = unknown;
-    user->borrowedBook = (Book **) calloc(numOfBookInOneTime, sizeof(Book *));
-    for (int i = 0; i < numOfBookInOneTime; ++i) {
-        user->borrowedBook[i] = (Book *) calloc(1, sizeof(struct book));
-    }
+    user->borrowedBook = (Book *) calloc(1, sizeof(struct book));
     user->borrowedBookNum = 0;
     user->userName = calloc(maxUserName, sizeof(char));
 
@@ -175,6 +196,7 @@ User new_user() {
     user->login = login;
     user->initUser = initUser;
     user->showBorrowedBooks = showBorrowedBooks;
+    user->returnBook = returnBook;
 
     return user;
 }
