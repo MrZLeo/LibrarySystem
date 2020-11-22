@@ -33,6 +33,8 @@ typedef struct bookshelf {
 
     void (*initBookshelf)(struct bookshelf *this, FILE *books);
 
+    void (*storeBookshelf)(struct bookshelf *this, FILE *books);
+
 } *Bookshelf;
 
 static int ID = 1;
@@ -44,6 +46,19 @@ void initBookshelf(Bookshelf this, FILE *books) {
         this->addBook(this, bookName);
     }
     fclose(books);
+}
+
+void storeBook(Book *book, FILE *books) {
+    if (book == NULL)
+        return;
+
+    fprintf(books, "%s\n", book->name);
+    storeBook(book->left, books);
+    storeBook(book->right, books);
+}
+
+void storeBookshelf(Bookshelf this, FILE *books) {
+    storeBook(this->root_book, books);
 }
 
 void free_Bookshelf(Bookshelf this) {
@@ -207,6 +222,7 @@ Bookshelf new_bookshelf() {
     bookshelf->showBook = showBook;
     bookshelf->removeBook = removeBook;
     bookshelf->initBookshelf = initBookshelf;
+    bookshelf->storeBookshelf = storeBookshelf;
 
     return bookshelf;
 }

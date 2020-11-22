@@ -8,8 +8,8 @@
 #include "../Model/Bookshelf.h"
 #include "../Model/User.h"
 
-const int LIST_LENGTH_OF_MAIN_MENU = 2;
-const int LIST_LENGTH_OF_STUDENT_MENU = 5;
+const int LIST_LENGTH_OF_MAIN_MENU = 3;
+const int LIST_LENGTH_OF_STUDENT_MENU = 7;
 const int LIST_LENGTH_OF_ROOT_MENU = 5;
 const int LIST_LENGTH_OF_VIEWER_MENU = 3;
 
@@ -32,6 +32,7 @@ const Menu MAIN_MENU = {
         LIST_LENGTH_OF_MAIN_MENU,
         "0.退出",
         "1.账号登录",
+        "2.账号注册",
         .showMenuDetail = showMenuDetail,
 };
 
@@ -40,8 +41,10 @@ const Menu STUDENT_MENU = {
         "1.查看图书",
         "2.借阅图书",
         "3.归还图书",
-        "4.返回上级",
-        "5.退出系统",
+        "4.已借图书",
+        "5.返回上级",
+        "6.修改密码",
+        "7.退出系统",
         .showMenuDetail = showMenuDetail,
 };
 
@@ -121,7 +124,6 @@ void showUser(User user) {
     }
 }
 
-// TODO 添加不同级菜单的管理
 void show(View this, User user) {
     system("cls");
     if (this->layer == first) {

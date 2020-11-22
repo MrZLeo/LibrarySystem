@@ -162,7 +162,8 @@ void showBorrowedBooks(User this) {
     int num = 0;
     while (prevBook->right != NULL) {
         Book *curBook = prevBook->right;
-        printf("book %d : ¡¶%s¡·, bookID: %d", num++, curBook->name, curBook->book_ID);
+        printf("book %d : ¡¶%s¡·, bookID: %d\n", num++, curBook->name, curBook->book_ID);
+        prevBook = prevBook->right;
     }
 }
 

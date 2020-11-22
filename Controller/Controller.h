@@ -26,15 +26,15 @@ typedef struct controller {
 
     void (*showUserBorrowedBook)(struct controller *this);
 
-    void (*bookshelf_setID)(struct controller *this);
-
     void (*init_bookshelf)(struct controller *this, FILE *books);
+
+    void (*store_bookshelf)(struct controller *this, FILE *books);
 
     void (*readBooks)(struct controller *this);
 
     bool (*addBookToBookshelf)(struct controller *this, char *bookName);
 
-    void (*findBookInBookshelf)(struct controller *this, char *bookName);
+    int (*findBookInBookshelf)(struct controller *this, char *bookName);
 
     bool (*removeBookInBookshelf)(struct controller *this, char *bookName);
 
@@ -69,7 +69,7 @@ void userBorrowBook(Controller this, char *bookName) {
         return;
     }
 
-    int bookID = this->bookshelf->findBook(this->bookshelf, bookName);
+    int bookID = this->findBookInBookshelf(this, bookName);
     if (bookID == -1) {
         printf("没有找到这本书\n");
         system("pause");
@@ -85,7 +85,6 @@ void userBorrowBook(Controller this, char *bookName) {
     printf("借阅成功\n");
 }
 
-// FIXME 不知道问题在哪，晚点debug
 void userReturnBook(Controller this, char *bookName) {
     return this->user->returnBook(this->user, bookName);
 }
@@ -98,6 +97,10 @@ void init_bookshelf(Controller this, FILE *books) {
     this->bookshelf->initBookshelf(this->bookshelf, books);
 }
 
+void store_bookShelf(Controller this, FILE *books) {
+    this->bookshelf->storeBookshelf(this->bookshelf, books);
+}
+
 void readBooks(Controller this) {
     this->view->showBooks(this->bookshelf);
 }
@@ -106,8 +109,8 @@ bool addBookToBookshelf(Controller this, char *bookName) {
     return this->bookshelf->addBook(this->bookshelf, bookName);
 }
 
-void findBookInBookshelf(Controller this, char *bookName) {
-    this->bookshelf->findBook(this->bookshelf, bookName);
+int findBookInBookshelf(Controller this, char *bookName) {
+    return this->bookshelf->findBook(this->bookshelf, bookName);
 }
 
 bool removeBookInBookshelf(Controller this, char *bookName) {
@@ -174,11 +177,19 @@ bool runStudent(Controller this, int info) {
             this->userReturnBook(this, bookName);
             break;
         }
-        case 4:
+        case 4: {
+            printf("已借图书：\n");
+            this->showUserBorrowedBook(this);
+            system("pause");
+            break;
+        }
+        case 5:
             this->view->layer--;
             system("cls");
             break;
-        case 5:
+        case 6:
+            // TODO 修改密码
+        case 7:
         default:
             return true;
     }
@@ -213,6 +224,7 @@ bool runViewer(Controller this, int info) {
  * @return 是否退出程序
  */
 bool runInDifferentLayer(Controller this, int info) {
+    // TODO 需要增加用户的可操作性，例如修改密码。
     if (this->view->layer == first) {
         switch (info) {
             case 1:
@@ -220,6 +232,8 @@ bool runInDifferentLayer(Controller this, int info) {
                 this->view->layer++;
                 system("cls");
                 return false;
+            case 2:
+                // TODO 加一个注册功能
             case 0:
             default: // TODO 这里是否需要容错机制？
                 return true;
@@ -249,16 +263,19 @@ bool runInDifferentLayer(Controller this, int info) {
 void run(Controller this) {
     bool isToStop = false;
 
-    // TODO 进入图书馆后的第一步应该要将文件中的书籍读入系统进行动态处理。
+    // 登陆时首先读取系统保存的书籍信息
     this->init_bookshelf(this, fopen("../books.txt", "r"));
 
-    // 不仅仅是view需要知道layer，controller也需要
+    // 主程序循环
     while (!isToStop) {
         this->view->show(this->view, this->user);
         int info = 0;
         scanf("%d", &info);
         isToStop = this->runInDifferentLayer(this, info);
     }
+
+    // 退出整个程序的时候需要把书籍信息写入文件
+    this->store_bookshelf(this, fopen("../books.txt", "r"));
 
     printf("--------END--------\n");
 }
@@ -274,6 +291,7 @@ Controller new_controller() {
     controller->userReturnBook = userReturnBook;
     controller->showUserBorrowedBook = showUserBorrowedBook;
     controller->init_bookshelf = init_bookshelf;
+    controller->store_bookshelf = store_bookShelf;
     controller->readBooks = readBooks;
     controller->addBookToBookshelf = addBookToBookshelf;
     controller->findBookInBookshelf = findBookInBookshelf;
