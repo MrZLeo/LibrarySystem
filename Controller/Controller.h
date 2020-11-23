@@ -239,7 +239,6 @@ bool runViewer(Controller this, int info) {
  * @return 是否退出程序
  */
 bool runInDifferentLayer(Controller this, int info) {
-    // TODO 需要增加用户的可操作性，例如修改密码。
     if (this->view->layer == first) {
         switch (info) {
             case 1:
@@ -250,7 +249,7 @@ bool runInDifferentLayer(Controller this, int info) {
             case 2: {
                 this->user_signUp(this);
                 system("pause");
-                break;
+                return false;
             }
             case 0:
             default: // TODO 这里是否需要容错机制？
@@ -260,7 +259,6 @@ bool runInDifferentLayer(Controller this, int info) {
         assert(this->view->layer == second);
 
         // 知道 layer==second 还不能解决问题，这里还得分user处理.
-        // TODO 是全部写在一起，还是再度抽象？ A：再度抽象
         switch (this->user->authority) {
             case root:
                 return this->runRoot(this, info);
