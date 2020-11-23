@@ -54,26 +54,26 @@ typedef struct controller {
 
 } *Controller;
 
-void setController(Controller this, View view, Bookshelf bookshelf, User user) {
+static void setController(Controller this, View view, Bookshelf bookshelf, User user) {
     this->view = view;
     this->bookshelf = bookshelf;
     this->user = user;
 }
 
 
-void user_login(Controller this) {
+static void user_login(Controller this) {
     this->user->initUser(this->user);
 }
 
-void user_signUp(Controller this) {
+static void user_signUp(Controller this) {
     this->user->signUp(this->user);
 }
 
-void user_changePassword(Controller this) {
+static void user_changePassword(Controller this) {
     this->user->changePassword(this->user);
 }
 
-void userBorrowBook(Controller this, char *bookName) {
+static void userBorrowBook(Controller this, char *bookName) {
 
     if (this->user->borrowedBookNum == numOfBookInOneTime) {
         printf("以达到同时借阅书籍上限\n");
@@ -97,39 +97,39 @@ void userBorrowBook(Controller this, char *bookName) {
     printf("借阅成功\n");
 }
 
-void userReturnBook(Controller this, char *bookName) {
+static void userReturnBook(Controller this, char *bookName) {
     return this->user->returnBook(this->user, bookName);
 }
 
-void showUserBorrowedBook(Controller this) {
+static void showUserBorrowedBook(Controller this) {
     this->user->showBorrowedBooks(this->user);
 }
 
-void init_bookshelf(Controller this, FILE *books) {
+static void init_bookshelf(Controller this, FILE *books) {
     this->bookshelf->initBookshelf(this->bookshelf, books);
 }
 
-void store_bookShelf(Controller this, FILE *books) {
+static void store_bookShelf(Controller this, FILE *books) {
     this->bookshelf->storeBookshelf(this->bookshelf, books);
 }
 
-void readBooks(Controller this) {
+static void readBooks(Controller this) {
     this->view->showBooks(this->bookshelf);
 }
 
-bool addBookToBookshelf(Controller this, char *bookName) {
+static bool addBookToBookshelf(Controller this, char *bookName) {
     return this->bookshelf->addBook(this->bookshelf, bookName);
 }
 
-int findBookInBookshelf(Controller this, char *bookName) {
+static int findBookInBookshelf(Controller this, char *bookName) {
     return this->bookshelf->findBook(this->bookshelf, bookName);
 }
 
-bool removeBookInBookshelf(Controller this, char *bookName) {
+static bool removeBookInBookshelf(Controller this, char *bookName) {
     return this->bookshelf->removeBook(this->bookshelf, bookName);
 }
 
-bool runRoot(Controller this, int info) {
+static bool runRoot(Controller this, int info) {
     switch (info) {
         case 1:
             printf("馆藏图书：\n");
@@ -168,7 +168,7 @@ bool runRoot(Controller this, int info) {
     return false;
 }
 
-bool runStudent(Controller this, int info) {
+static bool runStudent(Controller this, int info) {
     switch (info) {
         case 1:
             printf("馆藏图书：\n");
@@ -212,7 +212,7 @@ bool runStudent(Controller this, int info) {
     return false;
 }
 
-bool runViewer(Controller this, int info) {
+static bool runViewer(Controller this, int info) {
     switch (info) {
         case 1:
             printf("馆藏图书：\n");
@@ -238,7 +238,7 @@ bool runViewer(Controller this, int info) {
  * @param info 执行的菜单命令
  * @return 是否退出程序
  */
-bool runInDifferentLayer(Controller this, int info) {
+static bool runInDifferentLayer(Controller this, int info) {
     if (this->view->layer == first) {
         switch (info) {
             case 1:
@@ -276,7 +276,7 @@ bool runInDifferentLayer(Controller this, int info) {
 /**
  * 系统运行主函数
  */
-void run(Controller this) {
+static void run(Controller this) {
     bool isToStop = false;
 
     // 登陆时首先读取系统保存的书籍信息

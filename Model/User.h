@@ -16,11 +16,11 @@ typedef enum authority {
     unknown = 3,
 } Authority;
 
-char *root_password = "123456";
+static char *root_password = "123456";
 static int wrongTimeOfRoot = 0;
 static int wrongTimeOfStudent = 0;
-const int MAX_TIMES_TO_TRY = 3;
-const char *userAndPasswordFile = "../user_password.txt";
+static const int MAX_TIMES_TO_TRY = 3;
+static const char *userAndPasswordFile = "../user_password.txt";
 
 typedef struct user {
     Authority authority;
@@ -45,7 +45,7 @@ typedef struct user {
 
 } *User;
 
-bool checkPassword(const char *userName, const char *password) {
+static bool checkPassword(const char *userName, const char *password) {
     FILE *user_password = fopen(userAndPasswordFile, "r");
 
     while (!feof(user_password)) {
@@ -66,7 +66,7 @@ bool checkPassword(const char *userName, const char *password) {
     return false;
 }
 
-void login(User this, const char *authority, const char *password, char *userName) {
+static void login(User this, const char *authority, const char *password, char *userName) {
     if (strcmp(authority, "root") == 0) {
         if (strcmp(password, root_password) == 0) {
             this->authority = root;
@@ -95,7 +95,7 @@ void login(User this, const char *authority, const char *password, char *userNam
 
 }
 
-void getUserAndPassword(char *userName, char *password) {
+static void getUserAndPassword(char *userName, char *password) {
     if (strcmp(userName, "root") != 0) {
         assert(strcmp(userName, "student"));
 
@@ -110,7 +110,7 @@ void getUserAndPassword(char *userName, char *password) {
  * 注册操作
  * @param this
  */
-void signUp(User this) {
+static void signUp(User this) {
     char userName[maxUserName];
     char password[maxPasswordLength];
     getUserAndPassword(userName, password);
@@ -136,7 +136,7 @@ void signUp(User this) {
 
 }
 
-void initUser(User this) {
+static void initUser(User this) {
     char userName[maxUserName] = {0};
     char authority[8] = {0};
     char password[maxPasswordLength] = {0};
@@ -200,7 +200,7 @@ void initUser(User this) {
  * @param this
  * @param newPassword 新密码
  */
-void storeNewPassword(User this, char *newPassword) {
+static void storeNewPassword(User this, char *newPassword) {
     // 这里应该是修改文件原有的密码
     // 但要小心不要抹去其他用户的账号和密码
     FILE *passwordFile = fopen(userAndPasswordFile, "r");
@@ -221,7 +221,7 @@ void storeNewPassword(User this, char *newPassword) {
     rename("../newPasswordFile.txt", "user_password.txt");
 }
 
-void changePassword(User this) {
+static void changePassword(User this) {
     printf("请输入原密码：\n");
     char password[maxPasswordLength];
     scanf("%s", password);
@@ -241,7 +241,7 @@ void changePassword(User this) {
     }
 }
 
-void showBorrowedBooks(User this) {
+static void showBorrowedBooks(User this) {
     Book *prevBook = this->borrowedBook;
     int num = 0;
     while (prevBook->right != NULL) {
@@ -251,7 +251,7 @@ void showBorrowedBooks(User this) {
     }
 }
 
-void returnBook(User this, char *bookName) {
+static void returnBook(User this, char *bookName) {
     Book *prevBook = this->borrowedBook;
     while (prevBook->right != NULL) {
         if (strcmp(prevBook->right->name, bookName) == 0) {

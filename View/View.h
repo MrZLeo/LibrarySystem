@@ -88,7 +88,7 @@ typedef struct view {
     void (*showBooks)(Bookshelf bookshelf);
 } *View;
 
-void showMenu(View this, Authority authority) {
+static void showMenu(View this, Authority authority) {
     printf("以下为您可选择的操作：\n");
     switch (authority) {
         case root:
@@ -105,11 +105,11 @@ void showMenu(View this, Authority authority) {
     }
 }
 
-void showBooks(Bookshelf bookshelf) {
+static void showBooks(Bookshelf bookshelf) {
     bookshelf->showBook(bookshelf);
 }
 
-void showUser(User user) {
+static void showUser(User user) {
     switch (user->authority) {
         case root:
             printf("你好，图书馆管理员。\n");
@@ -124,7 +124,7 @@ void showUser(User user) {
     }
 }
 
-void show(View this, User user) {
+static void show(View this, User user) {
     system("cls");
     if (this->layer == first) {
         printf("欢迎来到图书馆。\n");

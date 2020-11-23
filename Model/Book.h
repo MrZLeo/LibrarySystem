@@ -33,7 +33,9 @@ Book *new_Book(int ID, char *name) {
 
 // TODO: 重新思考free操作的内存问题
 void free_Book(Book *book, int size) {
-    assert(book != NULL);
+    if (book == NULL)
+        return;
+
     for (int i = 0; i < size; ++i) {
         free(book->name);
         free(book);

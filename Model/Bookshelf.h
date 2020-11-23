@@ -39,7 +39,7 @@ typedef struct bookshelf {
 
 static int ID = 1;
 
-void initBookshelf(Bookshelf this, FILE *books) {
+static void initBookshelf(Bookshelf this, FILE *books) {
     while (!feof(books)) {
         char bookName[maxBookName];
         fscanf(books, "%s", bookName);
@@ -48,7 +48,7 @@ void initBookshelf(Bookshelf this, FILE *books) {
     fclose(books);
 }
 
-void storeBook(Book *book, FILE *books) {
+static void storeBook(Book *book, FILE *books) {
     if (book == NULL)
         return;
 
@@ -57,24 +57,25 @@ void storeBook(Book *book, FILE *books) {
     storeBook(book->right, books);
 }
 
-void storeBookshelf(Bookshelf this, FILE *books) {
+static void storeBookshelf(Bookshelf this, FILE *books) {
     storeBook(this->root_book, books);
 }
 
 void free_Bookshelf(Bookshelf this) {
+    // FIXME
     free_Book(this->root_book, this->size);
     free(this);
 }
 
-bool isEmpty(Bookshelf this) {
+static bool isEmpty(Bookshelf this) {
     return this->size == 0 ? true : false;
 }
 
-int getSize(Bookshelf this) {
+static int getSize(Bookshelf this) {
     return this->size;
 }
 
-Book *addBook__(Bookshelf bookshelf, Book *book, int bookID, char *bookName) {
+static Book *addBook__(Bookshelf bookshelf, Book *book, int bookID, char *bookName) {
 
     if (book == NULL) {
         bookshelf->size++;
@@ -92,14 +93,14 @@ Book *addBook__(Bookshelf bookshelf, Book *book, int bookID, char *bookName) {
     return book;
 }
 
-bool addBook(Bookshelf bookshelf, char *bookName) {
+static bool addBook(Bookshelf bookshelf, char *bookName) {
     assert(bookshelf != NULL);
     int rootSize = bookshelf->size;
     bookshelf->root_book = addBook__(bookshelf, bookshelf->root_book, ID++, bookName);
     return rootSize + 1 == bookshelf->size;
 }
 
-int findBook__(Book *book, char *bookName) {
+static int findBook__(Book *book, char *bookName) {
     if (book == NULL) {
         printf("找不到该书\n");
         return -1;
@@ -115,11 +116,11 @@ int findBook__(Book *book, char *bookName) {
 
 }
 
-int findBook(Bookshelf this, char *bookName) {
+static int findBook(Bookshelf this, char *bookName) {
     return findBook__(this->root_book, bookName);
 }
 
-void showBook__(Book *book) {
+static void showBook__(Book *book) {
     if (book == NULL)
         return;
 
@@ -129,11 +130,11 @@ void showBook__(Book *book) {
 
 }
 
-void showBook(Bookshelf this) {
+static void showBook(Bookshelf this) {
     showBook__(this->root_book);
 }
 
-Book *findMax(Book *book) {
+static Book *findMax(Book *book) {
     Book *cur = book;
 
     while (cur->right != NULL)
@@ -142,7 +143,7 @@ Book *findMax(Book *book) {
     return cur;
 }
 
-Book *removeMax(Bookshelf bookshelf, Book *book) {
+static Book *removeMax(Bookshelf bookshelf, Book *book) {
 
     if (book->right == NULL) {
         Book *leftBook = book->left;
@@ -155,7 +156,7 @@ Book *removeMax(Bookshelf bookshelf, Book *book) {
     return book;
 }
 
-Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
+static Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
     if (book == NULL) {
         return NULL;
     }
@@ -197,7 +198,7 @@ Book *removeBook__(Bookshelf bookshelf, Book *book, char *bookName) {
 
 }
 
-bool removeBook(Bookshelf this, char *bookName) {
+static bool removeBook(Bookshelf this, char *bookName) {
     assert(this != NULL);
     int rootSize = this->size;
     this->root_book = removeBook__(this, this->root_book, bookName);
