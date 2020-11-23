@@ -126,7 +126,7 @@ static void showBook__(Book *book) {
     if (book == NULL)
         return;
 
-    printf("bookName: %s, bookID: %d\n", book->name, book->book_ID);
+    printf("bookName: ¡¶%s¡·, bookID: %d\n", book->name, book->book_ID);
     showBook__(book->left);
     showBook__(book->right);
 
