@@ -7,6 +7,7 @@
     <file url="file://$PROJECT_DIR$/Model/Bookshelf.h" charset="GBK" />
     <file url="file://$PROJECT_DIR$/Model/User.h" charset="GBK" />
     <file url="file://$PROJECT_DIR$/View/View.h" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/cmake-build-debug/books.txt" charset="GBK" />
     <file url="file://$PROJECT_DIR$/main.c" charset="GBK" />
     <file url="PROJECT" charset="UTF-8" />
   </component>

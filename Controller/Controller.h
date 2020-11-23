@@ -10,6 +10,8 @@
 #include "../Model/Bookshelf.h"
 #include "../Model/User.h"
 
+static char *bookInformation = "books.txt";
+
 typedef struct controller {
 
     View view;
@@ -180,6 +182,7 @@ static bool runStudent(Controller this, int info) {
             char bookName[maxBookName];
             scanf("%s", bookName);
             this->userBorrowBook(this, bookName);
+            system("pause");
             break;
         }
         case 3: {
@@ -187,6 +190,7 @@ static bool runStudent(Controller this, int info) {
             char bookName[maxBookName];
             scanf("%s", bookName);
             this->userReturnBook(this, bookName);
+            system("pause");
             break;
         }
         case 4: {
@@ -280,7 +284,7 @@ static void run(Controller this) {
     bool isToStop = false;
 
     // 登陆时首先读取系统保存的书籍信息
-    this->init_bookshelf(this, fopen("../books.txt", "r"));
+    this->init_bookshelf(this, fopen(bookInformation, "r"));
 
     // 主程序循环
     while (!isToStop) {
@@ -291,7 +295,7 @@ static void run(Controller this) {
     }
 
     // 退出整个程序的时候需要把书籍信息写入文件
-    this->store_bookshelf(this, fopen("../books.txt", "r"));
+    this->store_bookshelf(this, fopen(bookInformation, "w"));
 
     printf("--------END--------\n");
 }

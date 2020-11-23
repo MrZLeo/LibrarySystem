@@ -22,7 +22,7 @@ Book *new_Book(int ID, char *name) {
     book->book_ID = ID;
 
     // 对char*要进一步处理
-    book->name = malloc(sizeof(char) * strlen(name));
+    book->name = malloc(sizeof(char) * maxBookName);
     strcpy(book->name, name);
 
     book->left = NULL;

@@ -20,7 +20,7 @@ static char *root_password = "123456";
 static int wrongTimeOfRoot = 0;
 static int wrongTimeOfStudent = 0;
 static const int MAX_TIMES_TO_TRY = 3;
-static const char *userAndPasswordFile = "../user_password.txt";
+static const char *userAndPasswordFile = "user_password.txt";
 
 typedef struct user {
     Authority authority;
@@ -53,7 +53,6 @@ static bool checkPassword(const char *userName, const char *password) {
         char passwordInFIle[maxPasswordLength];
         fscanf(user_password, "%s", user);
         fscanf(user_password, "%s", passwordInFIle);
-        fgetchar();
         if (strcmp(user, userName) == 0) {
             if (strcmp(password, passwordInFIle) == 0) {
                 fclose(user_password);
@@ -204,11 +203,12 @@ static void storeNewPassword(User this, char *newPassword) {
     // 这里应该是修改文件原有的密码
     // 但要小心不要抹去其他用户的账号和密码
     FILE *passwordFile = fopen(userAndPasswordFile, "r");
-    FILE *newPasswordFile = fopen("../newPasswordFile.txt", "w");
-    while (!feof(passwordFile)) {
-        char userName[maxUserName];
-        char userPassword[maxPasswordLength];
-        fscanf(passwordFile, "%s %s", userName, userPassword);
+    FILE *newPasswordFile = fopen("newPasswordFile.txt", "w");
+    char userName[maxUserName];
+    char userPassword[maxPasswordLength];
+    while (fscanf(passwordFile, "%s %s", userName, userPassword)) {
+        if (feof(passwordFile))
+            break;
         fprintf(newPasswordFile, "%s\t", userName);
         if (strcmp(this->userName, userName) == 0) {
             fprintf(newPasswordFile, "%s\n", newPassword);
@@ -218,7 +218,9 @@ static void storeNewPassword(User this, char *newPassword) {
     }
     fclose(passwordFile);
     fclose(newPasswordFile);
-    rename("../newPasswordFile.txt", "user_password.txt");
+
+    remove(userAndPasswordFile);
+    rename("newPasswordFile.txt", userAndPasswordFile);
 }
 
 static void changePassword(User this) {
@@ -243,7 +245,7 @@ static void changePassword(User this) {
 
 static void showBorrowedBooks(User this) {
     Book *prevBook = this->borrowedBook;
-    int num = 0;
+    int num = 1;
     while (prevBook->right != NULL) {
         Book *curBook = prevBook->right;
         printf("book %d : 《%s》, bookID: %d\n", num++, curBook->name, curBook->book_ID);

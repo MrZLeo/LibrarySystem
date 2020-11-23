@@ -40,9 +40,11 @@ typedef struct bookshelf {
 static int ID = 1;
 
 static void initBookshelf(Bookshelf this, FILE *books) {
-    while (!feof(books)) {
-        char bookName[maxBookName];
-        fscanf(books, "%s", bookName);
+
+    char bookName[maxBookName];
+    while (fscanf(books, "%s", bookName)) {
+        if (feof(books))
+            break;
         this->addBook(this, bookName);
     }
     fclose(books);
