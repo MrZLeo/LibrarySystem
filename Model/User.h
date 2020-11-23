@@ -48,11 +48,11 @@ typedef struct user {
 static bool checkPassword(const char *userName, const char *password) {
     FILE *user_password = fopen(userAndPasswordFile, "r");
 
-    while (!feof(user_password)) {
-        char user[maxUserName];
-        char passwordInFIle[maxPasswordLength];
-        fscanf(user_password, "%s", user);
-        fscanf(user_password, "%s", passwordInFIle);
+    char user[maxUserName];
+    char passwordInFIle[maxPasswordLength];
+    while (fscanf(user_password, "%s %s", user, passwordInFIle)) {
+        if (feof(user_password))
+            break;
         if (strcmp(user, userName) == 0) {
             if (strcmp(password, passwordInFIle) == 0) {
                 fclose(user_password);
