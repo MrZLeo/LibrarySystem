@@ -44,6 +44,8 @@ typedef struct controller {
 
     bool (*removeBookInBookshelf)(struct controller *this, char *bookName);
 
+    void (*viewShow)(struct controller *this);
+
     bool (*runRoot)(struct controller *this, int info);
 
     bool (*runStudent)(struct controller *this, int info);
@@ -129,6 +131,10 @@ static int findBookInBookshelf(Controller this, char *bookName) {
 
 static bool removeBookInBookshelf(Controller this, char *bookName) {
     return this->bookshelf->removeBook(this->bookshelf, bookName);
+}
+
+static void viewShow(Controller this) {
+    this->view->show(this->view, this->user);
 }
 
 static bool runRoot(Controller this, int info) {
@@ -288,7 +294,7 @@ static void run(Controller this) {
 
     // Ö÷³ÌĞòÑ­»·
     while (!isToStop) {
-        this->view->show(this->view, this->user);
+        this->viewShow(this);
         int info = 0;
         scanf("%d", &info);
         isToStop = this->runInDifferentLayer(this, info);
@@ -318,6 +324,7 @@ Controller new_controller() {
     controller->addBookToBookshelf = addBookToBookshelf;
     controller->findBookInBookshelf = findBookInBookshelf;
     controller->removeBookInBookshelf = removeBookInBookshelf;
+    controller->viewShow = viewShow;
     controller->runInDifferentLayer = runInDifferentLayer;
     controller->runRoot = runRoot;
     controller->runStudent = runStudent;
