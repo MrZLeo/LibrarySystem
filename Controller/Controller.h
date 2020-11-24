@@ -166,6 +166,7 @@ static bool runRoot(Controller this, int info) {
         }
         case 4:
             this->view->layer--;
+            this->user->authority = unknown;
             system("cls");
             break;
         case 5:
@@ -207,6 +208,7 @@ static bool runStudent(Controller this, int info) {
         }
         case 5:
             this->view->layer--;
+            this->user->authority = unknown;
             system("cls");
             break;
         case 6:
@@ -231,6 +233,7 @@ static bool runViewer(Controller this, int info) {
             break;
         case 2:
             this->view->layer--;
+            this->user->authority = unknown;
             system("cls");
             break;
         case 3:

@@ -85,8 +85,10 @@ static void login(User this, const char *authority, const char *password, char *
             this->userName = strcpy(this->userName, userName);
         } else {
             WRONG_TIME_OF_STUDENT++;
-            if (WRONG_TIME_OF_STUDENT < MAX_TIMES_TO_TRY)
+            if (WRONG_TIME_OF_STUDENT < MAX_TIMES_TO_TRY) {
                 printf("密码错误\n");
+                system("pause");
+            }
         }
     } else if (strcmp(authority, "viewer") == 0) {
         this->authority = viewer;
@@ -183,7 +185,8 @@ static void initUser(User this) {
         }
 
     } else {
-        printf("输入错误，是否重新输入？（Y/N）\n");\
+        printf("输入错误，是否重新输入？（Y/N）\n");
+        fflush(stdin);
         char ch;
         scanf("%c", &ch);
         while (ch == 'Y')
