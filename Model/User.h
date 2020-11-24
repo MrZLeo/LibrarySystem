@@ -16,11 +16,11 @@ typedef enum authority {
     unknown = 3,
 } Authority;
 
-static char *root_password = "123456";
-static int wrongTimeOfRoot = 0;
-static int wrongTimeOfStudent = 0;
+static char *ROOT_PASSWORD = "123456";
+static int WRONG_TIME_OF_ROOT = 3;
+static int WRONG_TIME_OF_STUDENT = 3;
 static const int MAX_TIMES_TO_TRY = 3;
-static const char *userAndPasswordFile = "user_password.txt";
+static const char *USER_AND_PASSWORD_FILE = "user_password.txt";
 
 typedef struct user {
     Authority authority;
@@ -46,7 +46,7 @@ typedef struct user {
 } *User;
 
 static bool checkPassword(const char *userName, const char *password) {
-    FILE *user_password = fopen(userAndPasswordFile, "r");
+    FILE *user_password = fopen(USER_AND_PASSWORD_FILE, "r");
 
     char user[maxUserName];
     char passwordInFIle[maxPasswordLength];
@@ -67,11 +67,11 @@ static bool checkPassword(const char *userName, const char *password) {
 
 static void login(User this, const char *authority, const char *password, char *userName) {
     if (strcmp(authority, "root") == 0) {
-        if (strcmp(password, root_password) == 0) {
+        if (strcmp(password, ROOT_PASSWORD) == 0) {
             this->authority = root;
         } else {
-            wrongTimeOfRoot++;
-            if (wrongTimeOfRoot < MAX_TIMES_TO_TRY)
+            WRONG_TIME_OF_ROOT++;
+            if (WRONG_TIME_OF_ROOT < MAX_TIMES_TO_TRY)
                 printf("密码错误\n");
             else {
                 printf("输入管理员密码错误超过三次，系统自动退出。\n");
@@ -84,8 +84,8 @@ static void login(User this, const char *authority, const char *password, char *
             this->authority = student;
             this->userName = strcpy(this->userName, userName);
         } else {
-            wrongTimeOfStudent++;
-            if (wrongTimeOfStudent < MAX_TIMES_TO_TRY)
+            WRONG_TIME_OF_STUDENT++;
+            if (WRONG_TIME_OF_STUDENT < MAX_TIMES_TO_TRY)
                 printf("密码错误\n");
         }
     } else if (strcmp(authority, "viewer") == 0) {
@@ -117,7 +117,7 @@ static void signUp(User this) {
     char checkPassword[maxPasswordLength];
     scanf("%s", checkPassword);
     if (strcmp(checkPassword, password) == 0) {
-        FILE *user_password_file = fopen(userAndPasswordFile, "a");
+        FILE *user_password_file = fopen(USER_AND_PASSWORD_FILE, "a");
         fprintf(user_password_file, "%s\t%s\n", userName, password);
         printf("注册成功\n");
         fclose(user_password_file);
@@ -202,7 +202,7 @@ static void initUser(User this) {
 static void storeNewPassword(User this, char *newPassword) {
     // 这里应该是修改文件原有的密码
     // 但要小心不要抹去其他用户的账号和密码
-    FILE *passwordFile = fopen(userAndPasswordFile, "r");
+    FILE *passwordFile = fopen(USER_AND_PASSWORD_FILE, "r");
     FILE *newPasswordFile = fopen("newPasswordFile.txt", "w");
     char userName[maxUserName];
     char userPassword[maxPasswordLength];
@@ -219,8 +219,8 @@ static void storeNewPassword(User this, char *newPassword) {
     fclose(passwordFile);
     fclose(newPasswordFile);
 
-    remove(userAndPasswordFile);
-    rename("newPasswordFile.txt", userAndPasswordFile);
+    remove(USER_AND_PASSWORD_FILE);
+    rename("newPasswordFile.txt", USER_AND_PASSWORD_FILE);
 }
 
 static void changePassword(User this) {

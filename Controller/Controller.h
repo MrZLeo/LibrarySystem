@@ -10,7 +10,7 @@
 #include "../Model/Bookshelf.h"
 #include "../Model/User.h"
 
-static char *bookInformation = "books.txt";
+static char *BOOK_INFORMATION = "books.txt";
 
 typedef struct controller {
 
@@ -290,7 +290,7 @@ static void run(Controller this) {
     bool isToStop = false;
 
     // 登陆时首先读取系统保存的书籍信息
-    this->init_bookshelf(this, fopen(bookInformation, "r"));
+    this->init_bookshelf(this, fopen(BOOK_INFORMATION, "r"));
 
     // 主程序循环
     while (!isToStop) {
@@ -301,7 +301,7 @@ static void run(Controller this) {
     }
 
     // 退出整个程序的时候需要把书籍信息写入文件
-    this->store_bookshelf(this, fopen(bookInformation, "w"));
+    this->store_bookshelf(this, fopen(BOOK_INFORMATION, "w"));
 
     printf("--------END--------\n");
 }
