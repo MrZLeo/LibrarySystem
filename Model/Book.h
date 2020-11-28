@@ -31,7 +31,6 @@ Book *new_Book(int ID, char *name) {
     return book;
 }
 
-// TODO: 重新思考free操作的内存问题
 void free_Book(Book *book, int size) {
     if (book == NULL)
         return;

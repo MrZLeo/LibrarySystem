@@ -99,6 +99,7 @@ static void showMenu(View this, Authority authority) {
             break;
         case viewer:
             this->viewerMenu.showMenuDetail(this->viewerMenu);
+            break;
         default:
             this->mainMenu.showMenuDetail(this->mainMenu);
             break;
