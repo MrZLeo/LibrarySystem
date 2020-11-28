@@ -151,6 +151,7 @@ static Book *removeMax(Bookshelf bookshelf, Book *book) {
         Book *leftBook = book->left;
         free(book);
         bookshelf->size--;
+        ID--;
         return leftBook;
     }
 

@@ -150,8 +150,8 @@ static bool runRoot(Controller this, int info) {
             scanf("%s", bookName);
             if (this->addBookToBookshelf(this, bookName)) {
                 printf("Ìí¼Ó³É¹¦\n");
-                system("pause");
             }
+            system("pause");
             break;
         }
         case 3: {
